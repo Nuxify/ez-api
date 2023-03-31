@@ -3,33 +3,26 @@ const express = require('express');
 const ParseServer = require('parse-server').ParseServer;
 const ParseDashboard = require('parse-dashboard');
 
-const databaseUri = 'postgres://postgres:0000@localhost:5432/octopus_sdk';
-
-const appId = process.env.APP_ID || 'myAppId';
-
-if (!databaseUri) {
-    console.log('DATABASE_URI not specified, falling back to localhost.');
-}
+// Load .env
+require('dotenv').config();
 
 // Parse server config
-const config = {
-    databaseURI: databaseUri || 'mongodb://localhost:27017/dev',
-    appId: appId,
-    masterKey: process.env.MASTER_KEY || 'MasterKey', //Add your master key here. Keep it secret!
-    serverURL: process.env.SERVER_URL || 'http://localhost:3000/parse', // Don't forget to change to https if needed
-    appName: process.env.SERVER_URL ?? 'Octopus',
-    publicServerURL: process.env.SERVER_URL || 'http://localhost:3000/parse',
-};
+const parseServer = new ParseServer({
+    databaseURI: process.env.DATABASE_URI,
+    appId: process.env.APP_ID,
+    masterKey: process.env.MASTER_KEY,
+    serverURL: process.env.SERVER_URL,
+    publicServerURL: process.env.SERVER_URL,
+});
 
 // Parse dashboard config
-const configDashboard = {
+const dashboard = new ParseDashboard({
     "apps": [
         {
-            "serverURL": process.env.SERVER_URL || 'http://localhost:3000/parse',
-            "appId": appId,
-            "masterKey": process.env.MASTER_KEY || 'MasterKey',
-            "appName": "First Parse server",
-
+            "serverURL": process.env.SERVER_URL,
+            "appId": process.env.APP_ID,
+            "masterKey": process.env.MASTER_KEY,
+            "appName": process.env.APP_NAME,
         }
     ],
     "users": [
@@ -38,22 +31,23 @@ const configDashboard = {
             "pass": process.env.DASHBOARD_PASSWORD || 'admin1'
         },
     ],
-}
+});
 
 const app = express();
 
-
-const dashboard = new ParseDashboard(configDashboard);
-
+// Serve the Parse Dashboard on the /dashboard URL prefix
 app.use('/dashboard', dashboard);
 
 // Serve the Parse API on the /parse URL prefix
-const mountPath = process.env.PARSE_MOUNT || '/parse';
+app.use('/parse', parseServer.app);
 
-/// parse server api
-const api = new ParseServer(config);
+
+// Start parse server
+parseServer.start();
 
 const port = process.env.PORT || 3000;
 
-let httpServer = require('http').createServer(app);
-httpServer.listen(port);
+
+app.listen(port, function () {
+    console.log(`REST API running on http://localhost:${port}/parse`);
+});
