@@ -49,5 +49,5 @@ const port = process.env.PORT || 3000;
 
 
 app.listen(port, function () {
-    console.log(`REST API running on http://localhost:${port}/parse`);
+    console.log(`Server is running...`);
 });
