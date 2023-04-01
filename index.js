@@ -78,6 +78,24 @@ app.post('/create-sample', async (req, res) => {
     res.send(result);
 });
 
+// Update certain record
+app.put('/update-sample/:objectId', async (req, res) => {
+    const sampleClass = new Parse.Object('SampleClass');
+    const objectId = req.params.objectId;
+    const sampleUpdatedName = req.body['name'];
+    const sampleUpdatedAge = req.body['age'];
+
+    sampleClass.id = objectId;
+
+    sampleClass.set('name', sampleUpdatedName);
+    sampleClass.set('age', sampleUpdatedAge);
+
+    const result = await sampleClass.save();
+    res.send(result);
+
+});
+
+
 // Start parse server
 parseServer.start();
 
