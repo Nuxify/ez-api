@@ -56,7 +56,7 @@
         "apps": [
             {
             "serverURL": process.env.SERVER_URL,
-            "appId": appId,
+            "appId": process.env.APP_ID,
             "masterKey": process.env.MASTER_KEY,
             "appName": "First Parse server",
             }
@@ -74,3 +74,5 @@
     app.use('/dashboard', dashboard);
 
     ```
+
+- Now you can navigate to the gui by navigating to `localhost:3000/dashboard`
