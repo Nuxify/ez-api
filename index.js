@@ -35,6 +35,9 @@ const dashboard = new ParseDashboard({
 
 const app = express();
 
+/// Read request body
+app.use(express.json())
+
 // Serve the Parse Dashboard on the /dashboard URL prefix
 app.use('/dashboard', dashboard);
 
@@ -62,6 +65,18 @@ app.get('/get-sample/:objectId', async (req, res) => {
     res.send(result);
 });
 
+
+app.post('/create-sample', async (req, res) => {
+    const sampleClass = new Parse.Object('SampleClass');
+    const sampleName = req.body['name'];
+    const sampleAge = req.body['age'];
+
+    sampleClass.set('name', sampleName);
+    sampleClass.set('age', sampleAge);
+    const result = await sampleClass.save();
+
+    res.send(result);
+});
 
 // Start parse server
 parseServer.start();
