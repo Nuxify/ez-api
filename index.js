@@ -95,6 +95,16 @@ app.put('/update-sample/:objectId', async (req, res) => {
 
 });
 
+// Delete certain record
+app.delete('/delete-sample/:objectId', async (req, res) => {
+    const sampleClass = new Parse.Object('SampleClass');
+    const objectId = req.params.objectId;
+    sampleClass.id = objectId;
+
+    const result = await sampleClass.destroy();
+    res.send(result);
+});
+
 
 // Start parse server
 parseServer.start();
