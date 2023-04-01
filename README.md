@@ -134,3 +134,104 @@ In parse, there are two option in which we can perform a CRUD operation.  **REST
         localhost:3000/classes/SampleClass/<objectId>
       
         ```
+
+- Parse JS Sdk.
+
+    1. thing to do is to target the class we wish to perform some query. EG. `const sampleClass = new Parse.Query('SampleClass');`
+
+    2. now we have to create an end point with different methods to trigger the different action for the sdk.
+
+       ```js
+        METHOD: GET
+
+        /// END POINTS:
+        /// Get all record
+        localhost:3000/get-sample/    
+        localhost:3000/get-sample/<objectId>
+
+      
+
+        /// Getting all record
+        const sampleClass = new Parse.Query('SampleClass');
+
+        const results = await sampleClass.find();
+
+        res.send(results);
+
+        /// Getting certain record
+
+        const objectId = req.params.objectId;
+        const sampleClass = new Parse.Object('SampleClass');
+        sampleClass.id = objectId;
+
+        const result = await sampleClass.fetch();
+
+        res.send(result);
+
+        ```
+
+        ```js
+        METHOD: POST
+
+        /// END POINT:
+        /// Creating a record
+        localhost:3000/create-sample/    
+
+      
+
+        /// Creating a record
+        const sampleClass = new Parse.Query('SampleClass');
+        const sampleName = req.body['name'];
+        const sampleAge = req.body['age'];
+
+        sampleClass.set('name', sampleName);
+        sampleClass.set('age', sampleAge);
+        const result = await sampleClass.save();
+
+        res.send(result);
+
+        ```
+
+         ```js
+        METHOD: PUT
+
+        /// END POINT:
+        /// Updating a record
+        localhost:3000/update-sample/    
+
+      
+
+        /// Updating a record
+        const sampleClass = new Parse.Object('SampleClass');
+        const objectId = req.params.objectId;
+
+        const sampleUpdatedName = req.body['name'];
+        const sampleUpdatedAge = req.body['age'];
+
+        sampleClass.id = objectId;
+
+        sampleClass.set('name', sampleUpdatedName);
+        sampleClass.set('age', sampleUpdatedAge);
+
+        const result = await sampleClass.save();
+        res.send(result);
+
+        ```
+
+        ```js
+        METHOD: PUT
+
+        /// END POINT:
+        /// Deleting certain record
+        localhost:3000/delete-sample/    
+
+      
+
+        /// Deleting certain record
+        const sampleClass = new Parse.Object('SampleClass');
+        const objectId = req.params.objectId;
+        sampleClass.id = objectId;
+
+        const result = await sampleClass.destroy();
+        res.send(result);
+        ```
