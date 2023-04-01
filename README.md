@@ -76,3 +76,61 @@
     ```
 
 - Now you can navigate to the gui by navigating to `localhost:3000/dashboard`
+
+## To perform an CRUD Operation in Parse
+
+In parse, there are two option in which we can perform a CRUD operation.  **REST API** (default) or you can make you of **Parse SDK** by creating an end point. You can read more on how to perform REST API with parse [here](http://docs.parseplatform.org/rest/guide/) and for Javascript SDK [here](https://github.com/parse-community/Parse-SDK-JS).
+
+- REST API
+    1. thing to do when using parse as REST API set the header to
+
+        `X-Parse-Application-Id: APP_ID` and `Content-Type:application/json` (OPTIONAL) for POST and PUT
+
+    2. In mounted parseServerApp path, it is the target for the queries. EG. `/parse` . To perform read, set the method to **GET** and ping `<host_name>:<port>/parse/classes/<target_class>`.
+        - host_name: the unique identifier that serves as name of your computer or server
+        - port:  number is a number assigned to uniquely identify a connection endpoint
+        - classes: by default when using REST API, it will use the tables or classes for parse server.
+        - target_class: name of the class you want to target.
+        - objectId: id of the record from the database.
+
+        ```js
+        METHOD: GET
+
+        /// Get all record
+        localhost:3000/classes/SampleClass/
+
+        /// Get certain record
+        localhost:3000/classes/SampleClass/<objectId>
+
+        ```
+
+        ```js
+        METHOD: POST
+
+        localhost:3000/classes/SampleClass
+
+        /// Sample json body
+        {
+            "name":"john doe",
+            "age":22
+        }
+        ```
+
+        ```js
+        METHOD: PUT
+
+        localhost:3000/classes/SampleClass/<objectId>
+        
+        /// Sample json body
+        {
+            "name":"john doe",
+            "age":23
+        }
+        ```
+
+        ```js
+        METHOD: DELETE
+
+        localhost:3000/classes/SampleClass/<objectId>
+      
+        ```
