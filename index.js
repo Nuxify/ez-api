@@ -42,6 +42,27 @@ app.use('/dashboard', dashboard);
 app.use('/parse', parseServer.app);
 
 
+// Get all records
+app.get('/get-sample/', async (req, res) => {
+    const sampleClass = new Parse.Query('SampleClass');
+
+    const results = await sampleClass.find();
+
+    res.send(results);
+});
+
+// Get certain records
+app.get('/get-sample/:objectId', async (req, res) => {
+    const objectId = req.params.objectId;
+    const sampleClass = new Parse.Object('SampleClass');
+    sampleClass.id = objectId;
+
+    const result = await sampleClass.fetch();
+
+    res.send(result);
+});
+
+
 // Start parse server
 parseServer.start();
 
