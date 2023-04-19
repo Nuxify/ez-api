@@ -235,3 +235,13 @@ In parse, there are two option in which we can perform a CRUD operation.  **REST
         const result = await sampleClass.destroy();
         res.send(result);
         ```
+
+## Issue Encountered
+
+- when using parse-dashboard on deployment, it will make the dashboard as deceptive website. Ongoing issue can be found [here](https://github.com/parse-community/parse-dashboard/issues/2392).
+
+- Temporary Solution: add a standalone webservice that the only thing it will do is to access the dashboard, or simply dont use parse-dashboard anymore and just rely with the datatable.
+
+## Bootstrap Docker environment on local
+
+- Run `docker-compose up`
