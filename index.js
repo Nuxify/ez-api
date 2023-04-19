@@ -31,7 +31,7 @@ const dashboard = new ParseDashboard({
             "pass": process.env.DASHBOARD_PASSWORD || 'admin1'
         },
     ],
-});
+}, { allowInsecureHTTP: true });
 
 const app = express();
 
