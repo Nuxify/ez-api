@@ -9,7 +9,7 @@ services:
       - DATABASE_URI=postgres://postgres:samplepassword@db:5432/parse-sdk
       - APP_ID=template_baas_parse
       - MASTER_KEY=MasterKey
-      - SERVER_URL=http://localhost:3000/parse # TOFIX: temporaryly use localhost:3000 until finding a better approach for local deployment
+      - SERVER_URL=http://localhost:3000/parse # TOFIX: temporaryly use localhost:3000 until finds a better approach for local deployment
       - APP_NAME=Template BaaS Parse
   db:
     image: postgres
