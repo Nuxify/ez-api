@@ -1,0 +1,17 @@
+{
+    "apps": [
+      {
+        "serverURL": "http://api.localhost/parse",
+        "appId": "template_baas_parse",
+        "masterKey": "MasterKey",
+        "appName": "Template BaaS Parse"
+      }
+    ],
+    "users": [
+      {
+        "user":"admin",
+        "pass":"admin1"
+      }
+    ]
+  }
+  
