@@ -16,6 +16,8 @@ services:
     container_name: parse-server-postgres
     environment:
       - POSTGRES_PASSWORD=samplepassword
+      - POSTGRES_USER=sampleuser
+      - POSTGRES_DB=parse-sdk
     volumes:
       - parse-server-postgres:/var/lib/postgresql/data
     ports:
