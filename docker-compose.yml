@@ -22,6 +22,18 @@ services:
       - parse-server-postgres:/var/lib/postgresql/data
     ports:
       - 5432:5432
+  parse-dashboard:
+    image: parseplatform/parse-dashboard:latest
+    environment:
+      - PARSE_DASHBOARD_ALLOW_INSECURE_HTTP=1
+    command: 
+      - parse-dashboard --dev
+    ports:
+      - "4040:4040"
+    volumes:
+      - ./config/parse-dashboard-config.json:/src/Parse-Dashboard/parse-dashboard-config.json
+    depends_on:
+      - parse-server-api
 volumes:
   parse-server-postgres:
 
