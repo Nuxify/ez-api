@@ -46,6 +46,9 @@ app.use('/dashboard', dashboard);
 app.use('/parse', parseServer.app);
 
 
+app.get('/', (req, res) => {
+    res.send({ alive: true });
+});
 // Get all records
 app.get('/get-sample/', async (req, res) => {
     const sampleClass = new Parse.Query('SampleClass');
