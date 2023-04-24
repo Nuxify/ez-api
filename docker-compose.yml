@@ -11,6 +11,19 @@ services:
       - MASTER_KEY=MasterKey
       - SERVER_URL=http://localhost:3000/parse # TOFIX: temporaryly use localhost:3000 until finding a better approach for local deployment
       - APP_NAME=Template BaaS Parse
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.parse-server-api.rule=Host(`api.localhost`)"
+      - "traefik.http.routers.parse-server-api.entrypoints=http"
+      - "traefik.http.middlewares.parse-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.parse.middlewares=parse-https-redirect"
+      - "traefik.http.routers.parse-secure.rule=Host(`api.parse-template.com`)"
+      - "traefik.http.routers.parse-secure.entrypoints=https"
+      - "traefik.http.routers.parse-secure.tls=true"
+      - "traefik.http.services.parse.loadbalancer.server.port=3000"
+    depends_on:
+      - traefik
+      - db
   db:
     image: postgres
     container_name: parse-server-postgres
@@ -32,8 +45,32 @@ services:
       - "4040:4040"
     volumes:
       - ./config/parse-dashboard-config.json:/src/Parse-Dashboard/parse-dashboard-config.json
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.parse-dashboard.rule=Host(`dashboard.localhost`)"
+      - "traefik.http.routers.parse-dashboard.entrypoints=http"
+      - "traefik.http.middlewares.dashboard-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.dashboard.middlewares=dashboard-https-redirect"
+      - "traefik.http.routers.dashboard-secure.rule=Host(`dashboard.parse-template.com`)"
+      - "traefik.http.routers.dashboard-secure.entrypoints=https"
+      - "traefik.http.routers.dashboard-secure.tls=true"
+      - "traefik.http.services.dashboard.loadbalancer.server.port=4040"
     depends_on:
       - parse-server-api
+      - traefik
+  traefik:
+    image: traefik:v2.9
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+    volumes:
+      - "./letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    restart: unless-stopped
 volumes:
   parse-server-postgres:
 
