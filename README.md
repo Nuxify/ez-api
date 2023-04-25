@@ -235,3 +235,148 @@ In parse, there are two option in which we can perform a CRUD operation.  **REST
         const result = await sampleClass.destroy();
         res.send(result);
         ```
+
+## Issue Encountered
+
+- when using parse-dashboard on deployment, it will make the dashboard as deceptive website. Ongoing issue can be found [here](https://github.com/parse-community/parse-dashboard/issues/2392).
+
+- Temporary Solution: add a standalone webservice that the only thing it will do is to access the dashboard, or simply dont use parse-dashboard anymore and just rely with the datatable.
+
+## Setup Dockerfile and docker compose for parse-server-api ,database, parse-dashboard, and traefik
+
+- Create a `Dockerfile` inside project folder. This will make an image for our node express app. To build it we can simply run `docker build ./` or we can build the image during our docker compose.
+
+    ```docker
+    # Set the version of node to be used.
+    FROM node:18.12.1
+
+    # Make a working directory on /app path
+    WORKDIR /app
+
+    # Copy and install the package.json from local to ./ path
+    COPY package*.json ./
+
+    # Run NPM install command
+    RUN npm install
+
+    # Copy all local file to ./ path
+    COPY .  .
+
+    # Add environment port 
+    ENV PORT=3000
+
+    # Expose the port 
+    EXPOSE 3000
+
+
+
+    # Commands the container on how to run the application 
+    CMD ["npm","start"]
+
+
+    ```
+
+- Create a `docker-compose.yml` inside our project folder. This will create an image of our services all at one and run the container.
+
+    ```yaml
+    version: '3.8'
+
+    services:
+    parse-server-api:
+        build: .
+        ports:
+        - 3000:3000
+        environment:
+        - DATABASE_URI=postgres://postgres:samplepassword@db:5432/parse-sdk
+        - APP_ID=template_baas_parse
+        - MASTER_KEY=MasterKey
+        - SERVER_URL=http://localhost:3000/parse # TOFIX: temporaryly use localhost:3000 until finding a better approach for local deployment
+        - APP_NAME=Template BaaS Parse
+        labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.parse-server-api.rule=Host(`api.localhost`)"
+        - "traefik.http.routers.parse-server-api.entrypoints=http"
+        - "traefik.http.middlewares.parse-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.parse.middlewares=parse-https-redirect"
+        - "traefik.http.routers.parse-secure.rule=Host(`api.parse-template.com`)"
+        - "traefik.http.routers.parse-secure.entrypoints=https"
+        - "traefik.http.routers.parse-secure.tls=true"
+        - "traefik.http.services.parse.loadbalancer.server.port=3000"
+        depends_on:
+        - traefik
+        - db
+    db:
+        image: postgres
+        container_name: parse-server-postgres
+        environment:
+        - POSTGRES_PASSWORD=samplepassword
+        - POSTGRES_USER=sampleuser
+        - POSTGRES_DB=parse-sdk
+        volumes:
+        - parse-server-postgres:/var/lib/postgresql/data
+        ports:
+        - 5432:5432
+    parse-dashboard:
+        image: parseplatform/parse-dashboard:latest
+        environment:
+        - PARSE_DASHBOARD_ALLOW_INSECURE_HTTP=1
+        command: 
+        - parse-dashboard --dev
+        ports:
+        - "4040:4040"
+        volumes:
+        - ./config/parse-dashboard-config.json:/src/Parse-Dashboard/parse-dashboard-config.json
+        labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.parse-dashboard.rule=Host(`dashboard.localhost`)"
+        - "traefik.http.routers.parse-dashboard.entrypoints=http"
+        - "traefik.http.middlewares.dashboard-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.dashboard.middlewares=dashboard-https-redirect"
+        - "traefik.http.routers.dashboard-secure.rule=Host(`dashboard.parse-template.com`)"
+        - "traefik.http.routers.dashboard-secure.entrypoints=https"
+        - "traefik.http.routers.dashboard-secure.tls=true"
+        - "traefik.http.services.dashboard.loadbalancer.server.port=4040"
+        depends_on:
+        - parse-server-api
+        - traefik
+    traefik:
+        image: traefik:v2.9
+        command:
+        - "--api.insecure=true"
+        - "--providers.docker=true"
+        ports:
+        - "80:80"
+        - "8080:8080"
+        - "443:443"
+        volumes:
+        - "./letsencrypt:/letsencrypt"
+        - "/var/run/docker.sock:/var/run/docker.sock:ro"
+        restart: unless-stopped
+    volumes:
+    parse-server-postgres:
+
+
+    ```
+
+    on running creating a separate service for `parse-dashboard` we create a file on our config folder `config/parse-dashboard-config.json`. This json config will be copied inside the container and will be used as the configuration for our parse dashboard container. We can add as many apps/parse-server for this dashboard. The `serverURL` is pointed in configured host traefik path for our `parse-server-api`.
+
+    ```json
+    {
+        "apps": [
+        {
+            "serverURL": "http://api.localhost/parse",
+            "appId": "template_baas_parse",
+            "masterKey": "MasterKey",
+            "appName": "Template BaaS Parse"
+        }
+        ],
+        "users": [
+        {
+            "user":"admin",
+            "pass":"admin1"
+        }
+        ]
+    }
+  
+    ```
+    After setting all up. Run `docker-compose up`. This will create/download a image and run the container.
