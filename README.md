@@ -265,6 +265,20 @@ In parse, there are two option in which we can perform a CRUD operation.  **REST
 
 ## Setup Dockerfile and docker compose for parse-server-api ,database, parse-dashboard, and traefik
 
+```mermaid
+    graph LR
+    A[Parse Server Docker API image] -- Deploy --> E[Docker Container]
+    B[Parse Dashboard image] -- Deploy --> E[Docker Container]
+    C[PostgreSQL Database image] -- Deploy --> E[Docker Container]
+    D[Traefik] -- Deploy --> E[Docker Container]
+    E[Docker Container] <--> F
+    F[Traefix Host EG. api.hostname or dashboard.hostname] <-- Request/Response --> G[Client]
+    G[Client] -- Application ID & Master Key --> F
+    G[Client] -- parse module --> F
+    G -- send queries --> F
+    
+```
+
 * Create a `Dockerfile` inside project folder. This will make an image for our node express app. To build it we can simply run `docker build ./` or we can build the image during our docker compose.
 
     ```docker
