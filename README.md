@@ -1,19 +1,40 @@
 # Parse Server BaaS Template
 
+```mermaid
+    graph LR
+    A[Parse Server] -- PostgreSQL --> B((Database))
+    A -- Application ID & Master Key --> C(API Server Template with Node Express)
+    C -- parse module --> A
+    C -- send queries --> A
+
+```
+
+* **Parse Server**: This is the core of the Parse Server app. It handles all requests from the Mermaid JS app and interacts with the PostgreSQL database to store and retrieve data.
+
+* **PostgreSQL**: This is the database where all data is stored. Parse Server uses PostgreSQL to store data in a structured format.
+
+* **Application ID and Master Key**: These are two unique identifiers that authenticate requests from the Mermaid JS app. The application ID and master key are generated when you create a Parse Server app.
+
+* **API Server Template with Node**: This is the client-side application that interacts with Parse Server to retrieve, update, or create new data with our custom endpoint. The API Server Template app uses the parse module to communicate with Parse Server.
+
+* **Parse module**: The parse module is a JavaScript library that provides an API for communicating with Parse Server. It simplifies the process of sending queries to Parse Server by handling authentication and error handling.
+
+* **Send queries**: The API Server Template app sends queries to Parse Server using the parse module. For example, a query might retrieve all objects that match a certain criteria, update an existing object, or create a new object.
+
 ## To use ParseServer with PostgreSQL
 
-- Install PostgreSQL Locally. [Install here.](https://www.postgresql.org/download/)
+* Install PostgreSQL Locally. [Install here.](https://www.postgresql.org/download/)
 
-- Install NodeJS and NPM. [Install here.](https://nodejs.org/en/)
+* Install NodeJS and NPM. [Install here.](https://nodejs.org/en/)
 
-- In terminal install parse server globally with this command: `npm install -g parse-server`
+* In terminal install parse server globally with this command: `npm install -g parse-server`
 
-- In PostgreSQL, create a database and extract the URI of the databse server to be use in parse server. To get the URI of the postgres database. Follow this format:
+* In PostgreSQL, create a database and extract the URI of the databse server to be use in parse server. To get the URI of the postgres database. Follow this format:
     `<database_provider>://<username>:<pass>@<host_name>:<port>/<database_name>`
 
     Example. `postgres://postgres:0000@localhost:5432/octopus_sdk`
 
-- Create file `index.js`: For a full list of available options, run `parse-server --help` or take a look at Parse Server [Configurations](https://parseplatform.org/parse-server/api/master/ParseServerOptions.html).
+* Create file `index.js`: For a full list of available options, run `parse-server --help` or take a look at Parse Server [Configurations](https://parseplatform.org/parse-server/api/master/ParseServerOptions.html).
 
     ```js
     const express = require('express');
@@ -48,7 +69,7 @@
 
     ```
 
-- (OPTIONAL) Parse Server Dashboard configuration. For database GUI.
+* (OPTIONAL) Parse Server Dashboard configuration. For database GUI.
 
     ```js
     // Parse dashboard config
@@ -75,23 +96,23 @@
 
     ```
 
-- Now you can navigate to the gui by navigating to `localhost:3000/dashboard`
+* Now you can navigate to the gui by navigating to `localhost:3000/dashboard`
 
 ## To perform an CRUD Operation in Parse
 
 In parse, there are two option in which we can perform a CRUD operation.  **REST API** (default) or you can make you of **Parse SDK** by creating an end point. You can read more on how to perform REST API with parse [here](http://docs.parseplatform.org/rest/guide/) and for Javascript SDK [here](https://github.com/parse-community/Parse-SDK-JS).
 
-- REST API
+* REST API
     1. thing to do when using parse as REST API set the header to
 
         `X-Parse-Application-Id: APP_ID` and `Content-Type:application/json` (OPTIONAL) for POST and PUT
 
     2. In mounted parseServerApp path, it is the target for the queries. EG. `/parse` . To perform read, set the method to **GET** and ping `<host_name>:<port>/parse/classes/<target_class>`.
-        - host_name: the unique identifier that serves as name of your computer or server
-        - port:  number is a number assigned to uniquely identify a connection endpoint
-        - classes: by default when using REST API, it will use the tables or classes for parse server.
-        - target_class: name of the class you want to target.
-        - objectId: id of the record from the database.
+        * host_name: the unique identifier that serves as name of your computer or server
+        * port:  number is a number assigned to uniquely identify a connection endpoint
+        * classes: by default when using REST API, it will use the tables or classes for parse server.
+        * target_class: name of the class you want to target.
+        * objectId: id of the record from the database.
 
         ```js
         METHOD: GET
@@ -135,7 +156,7 @@ In parse, there are two option in which we can perform a CRUD operation.  **REST
       
         ```
 
-- Parse JS Sdk.
+* Parse JS Sdk.
 
     1. thing to do is to target the class we wish to perform some query. EG. `const sampleClass = new Parse.Query('SampleClass');`
 
@@ -238,13 +259,13 @@ In parse, there are two option in which we can perform a CRUD operation.  **REST
 
 ## Issue Encountered
 
-- when using parse-dashboard on deployment, it will make the dashboard as deceptive website. Ongoing issue can be found [here](https://github.com/parse-community/parse-dashboard/issues/2392).
+* when using parse-dashboard on deployment, it will make the dashboard as deceptive website. Ongoing issue can be found [here](https://github.com/parse-community/parse-dashboard/issues/2392).
 
-- Temporary Solution: add a standalone webservice that the only thing it will do is to access the dashboard, or simply dont use parse-dashboard anymore and just rely with the datatable.
+* Temporary Solution: add a standalone webservice that the only thing it will do is to access the dashboard, or simply dont use parse-dashboard anymore and just rely with the datatable.
 
 ## Setup Dockerfile and docker compose for parse-server-api ,database, parse-dashboard, and traefik
 
-- Create a `Dockerfile` inside project folder. This will make an image for our node express app. To build it we can simply run `docker build ./` or we can build the image during our docker compose.
+* Create a `Dockerfile` inside project folder. This will make an image for our node express app. To build it we can simply run `docker build ./` or we can build the image during our docker compose.
 
     ```docker
     # Set the version of node to be used.
@@ -276,7 +297,7 @@ In parse, there are two option in which we can perform a CRUD operation.  **REST
 
     ```
 
-- Create a `docker-compose.yml` inside our project folder. This will create an image of our services all at one and run the container.
+* Create a `docker-compose.yml` inside our project folder. This will create an image of our services all at one and run the container.
 
     ```yaml
     version: '3.8'
@@ -379,4 +400,5 @@ In parse, there are two option in which we can perform a CRUD operation.  **REST
     }
   
     ```
+
     After setting all up. Run `docker-compose up`. This will create/download a image and run the container.
