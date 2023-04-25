@@ -9,11 +9,11 @@
 
 ```
 
-* **Parse Server**: This is the core of the Parse Server app. It handles all requests from the Mermaid JS app and interacts with the PostgreSQL database to store and retrieve data.
+* **Parse Server**: This is the core of the Parse Server app. It handles all requests from the API Server Template app and interacts with the PostgreSQL database to store and retrieve data.
 
 * **PostgreSQL**: This is the database where all data is stored. Parse Server uses PostgreSQL to store data in a structured format.
 
-* **Application ID and Master Key**: These are two unique identifiers that authenticate requests from the Mermaid JS app. The application ID and master key are generated when you create a Parse Server app.
+* **Application ID and Master Key**: These are two unique identifiers that authenticate requests from the API Server Template app. The application ID and master key are generated when you create a Parse Server app.
 
 * **API Server Template with Node**: This is the client-side application that interacts with Parse Server to retrieve, update, or create new data with our custom endpoint. The API Server Template app uses the parse module to communicate with Parse Server.
 

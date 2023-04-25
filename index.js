@@ -13,6 +13,7 @@ const parseServer = new ParseServer({
     masterKey: process.env.MASTER_KEY,
     serverURL: process.env.SERVER_URL,
     publicServerURL: process.env.SERVER_URL,
+    masterKeyIps: ['0.0.0.0/0', '::/0']
 });
 
 // Parse dashboard config
@@ -31,7 +32,7 @@ const dashboard = new ParseDashboard({
             "pass": process.env.DASHBOARD_PASSWORD || 'admin1'
         },
     ],
-});
+}, { allowInsecureHTTP: true });
 
 const app = express();
 
@@ -45,6 +46,9 @@ app.use('/dashboard', dashboard);
 app.use('/parse', parseServer.app);
 
 
+app.get('/', (req, res) => {
+    res.send({ alive: true });
+});
 // Get all records
 app.get('/get-sample/', async (req, res) => {
     const sampleClass = new Parse.Query('SampleClass');
