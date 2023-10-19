@@ -13,7 +13,10 @@ const parseServer = new ParseServer({
     masterKey: process.env.MASTER_KEY,
     serverURL: process.env.SERVER_URL,
     publicServerURL: process.env.SERVER_URL,
-    masterKeyIps: ['0.0.0.0/0', '::/0']
+    masterKeyIps: ['0.0.0.0/0', '::/0'],
+    allowClientClassCreation: true,
+    allowExpiredAuthDataToken: true,
+    encodeParseObjectInCloudFunction: true,
 });
 
 // Parse dashboard config
