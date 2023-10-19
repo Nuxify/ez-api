@@ -118,17 +118,17 @@ In parse, there are two option in which we can perform a CRUD operation.  **REST
         METHOD: GET
 
         /// Get all record
-        localhost:3000/classes/SampleClass/
+        localhost:3000/parse/classes/SampleClass/
 
         /// Get certain record
-        localhost:3000/classes/SampleClass/<objectId>
+        localhost:3000/parse/classes/SampleClass/<objectId>
 
         ```
 
         ```js
         METHOD: POST
 
-        localhost:3000/classes/SampleClass
+        localhost:3000/parse/classes/SampleClass
 
         /// Sample json body
         {
@@ -140,7 +140,7 @@ In parse, there are two option in which we can perform a CRUD operation.  **REST
         ```js
         METHOD: PUT
 
-        localhost:3000/classes/SampleClass/<objectId>
+        localhost:3000/parse/classes/SampleClass/<objectId>
         
         /// Sample json body
         {
@@ -152,7 +152,7 @@ In parse, there are two option in which we can perform a CRUD operation.  **REST
         ```js
         METHOD: DELETE
 
-        localhost:3000/classes/SampleClass/<objectId>
+        localhost:3000/parse/classes/SampleClass/<objectId>
       
         ```
 
@@ -218,7 +218,7 @@ In parse, there are two option in which we can perform a CRUD operation.  **REST
 
         /// END POINT:
         /// Updating a record
-        localhost:3000/update-sample/    
+        localhost:3000/update-sample/<objectId>
 
       
 
@@ -240,11 +240,11 @@ In parse, there are two option in which we can perform a CRUD operation.  **REST
         ```
 
         ```js
-        METHOD: PUT
+        METHOD: DELETE
 
         /// END POINT:
         /// Deleting certain record
-        localhost:3000/delete-sample/    
+        localhost:3000/delete-sample/<objectId>
 
       
 
