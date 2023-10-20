@@ -1,4 +1,4 @@
-version: '3.3'
+version: "3.3"
 
 services:
   api-parse-server:
@@ -12,7 +12,7 @@ services:
       options:
         max-size: "1m"
     env_file:
-      - ./.env 
+      - ./.env
     networks:
       - proxy
     volumes:
@@ -32,12 +32,11 @@ services:
       # middleware assignment
       - "traefik.http.routers.api-parse-server.middlewares=https-redirect@file"
 
-
   parse-dashboard:
     image: parseplatform/parse-dashboard:latest
     container_name: parse-dashboard
     platform: linux/x86_64
-    command: 
+    command:
       - parse-dashboard --dev
     environment:
       - PARSE_DASHBOARD_ALLOW_INSECURE_HTTP=1
@@ -72,6 +71,3 @@ services:
 networks:
   proxy:
     external: true
-
-  
-
