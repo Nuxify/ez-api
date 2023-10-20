@@ -89,5 +89,5 @@ app.delete("/delete-sample/:objectId", async (req, res) => {
 parseServer.start();
 const port = process.env.APP_PARSE_PORT || 4000;
 app.listen(port, function () {
-  console.log(`Server is running...`);
+  console.log(`Server is running on port :${process.env.APP_PARSE_PORT}`);
 });
