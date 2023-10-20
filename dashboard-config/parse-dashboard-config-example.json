@@ -1,0 +1,17 @@
+{
+  "apps": [
+    {
+      "appId": "parse_dashboard",
+      "appName": "Parse Dashboard",
+      "serverURL": "https://octopus-dashboard.nuxify.tech",
+      "masterKey": "MasterKey",
+      "port": 4040
+    }
+  ],
+  "users": [
+    {
+      "user": "sudo",
+      "pass": "nuxify123"
+    }
+  ]
+}

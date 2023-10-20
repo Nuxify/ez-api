@@ -1,8 +1,11 @@
 # Set the version of node to be used.
-FROM node:18.12.1
+FROM node:16.16.0-alpine
 
-# Make a working directory on /app path
-WORKDIR /app
+# manage workflows and dependencies
+WORKDIR /app/build
+
+# make sure to delete node_modules
+RUN mkdir -p node_modules
 
 # Copy and install the package.json from local to ./ path
 COPY package*.json ./
@@ -12,14 +15,6 @@ RUN npm install
 
 # Copy all local file to ./ path
 COPY .  .
-
-# Add environment port 
-ENV PORT=3000
-
-# Expose the port 
-EXPOSE 3000
-
-
 
 # Commands the container on how to run the application 
 CMD ["npm","start"]

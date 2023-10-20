@@ -1,76 +1,77 @@
-version: '3.8'
+version: '3.3'
 
 services:
-  parse-server-api:
+  api-parse-server:
     build: .
-    ports:
-      - 3000:3000
-    environment:
-      - DATABASE_URI=postgres://postgres:samplepassword@db:5432/parse-sdk
-      - APP_ID=template_baas_parse
-      - MASTER_KEY=MasterKey
-      - SERVER_URL=http://localhost:3000/parse # TOFIX: temporaryly use localhost:3000 until finds a better approach for local deployment
-      - APP_NAME=Template BaaS Parse
+    container_name: api-parse-server
+    platform: linux/x86_64
+    mem_limit: “3g”
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+    env_file:
+      - ./.env 
+    networks:
+      - proxy
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.parse-server-api.rule=Host(`api.localhost`)"
-      - "traefik.http.routers.parse-server-api.entrypoints=http"
-      - "traefik.http.middlewares.parse-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.parse.middlewares=parse-https-redirect"
-      - "traefik.http.routers.parse-secure.rule=Host(`api.parse-template.com`)"
-      - "traefik.http.routers.parse-secure.entrypoints=https"
-      - "traefik.http.routers.parse-secure.tls=true"
-      - "traefik.http.services.parse.loadbalancer.server.port=3000"
-    depends_on:
-      - traefik
-      - db
-  db:
-    image: postgres
-    container_name: parse-server-postgres
-    environment:
-      - POSTGRES_PASSWORD=samplepassword
-      - POSTGRES_USER=sampleuser
-      - POSTGRES_DB=parse-sdk
-    volumes:
-      - parse-server-postgres:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
+      - "traefik.http.routers.api-parse-server.entrypoints=http"
+      - "traefik.http.routers.api-parse-server.rule=Host(`${APP_PARSE_URL}`)"
+      - "traefik.http.routers.api-parse-server-secure.entrypoints=https"
+      - "traefik.http.routers.api-parse-server-secure.rule=Host(`${APP_PARSE_URL}`)"
+      - "traefik.http.routers.api-parse-server-secure.tls=true"
+      - "traefik.http.routers.api-parse-server-secure.tls.certresolver=http"
+      - "traefik.http.routers.api-parse-server-secure.service=api-parse-server"
+      - "traefik.http.services.api-parse-server.loadbalancer.server.port=${APP_PARSE_PORT}"
+      - "traefik.docker.network=proxy"
+      # middleware assignment
+      - "traefik.http.routers.api-parse-server.middlewares=https-redirect@file"
+
+
   parse-dashboard:
     image: parseplatform/parse-dashboard:latest
-    environment:
-      - PARSE_DASHBOARD_ALLOW_INSECURE_HTTP=1
+    container_name: parse-dashboard
+    platform: linux/x86_64
     command: 
       - parse-dashboard --dev
-    ports:
-      - "4040:4040"
+    environment:
+      - PARSE_DASHBOARD_ALLOW_INSECURE_HTTP=1
+    mem_limit: “3g”
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+    networks:
+      - proxy
     volumes:
-      - ./config/parse-dashboard-config.json:/src/Parse-Dashboard/parse-dashboard-config.json
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./dashboard-config/parse-dashboard-config.json:/src/Parse-Dashboard/parse-dashboard-config.json
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.parse-dashboard.rule=Host(`dashboard.localhost`)"
       - "traefik.http.routers.parse-dashboard.entrypoints=http"
-      - "traefik.http.middlewares.dashboard-https-redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.dashboard.middlewares=dashboard-https-redirect"
-      - "traefik.http.routers.dashboard-secure.rule=Host(`dashboard.parse-template.com`)"
-      - "traefik.http.routers.dashboard-secure.entrypoints=https"
-      - "traefik.http.routers.dashboard-secure.tls=true"
-      - "traefik.http.services.dashboard.loadbalancer.server.port=4040"
+      - "traefik.http.routers.parse-dashboard.rule=Host(`${APP_PARSE_DASHBOARD_URL}`)"
+      - "traefik.http.routers.parse-dashboard-secure.entrypoints=https"
+      - "traefik.http.routers.parse-dashboard-secure.rule=Host(`${APP_PARSE_DASHBOARD_URL}`)"
+      - "traefik.http.routers.parse-dashboard-secure.tls=true"
+      - "traefik.http.routers.parse-dashboard-secure.tls.certresolver=http"
+      - "traefik.http.routers.parse-dashboard-secure.service=parse-dashboard"
+      - "traefik.http.services.parse-dashboard.loadbalancer.server.port=${APP_PARSE_DASHBOARD_PORT}"
+      - "traefik.docker.network=proxy"
+      # middleware assignment
+      - "traefik.http.routers.parse-dashboard.middlewares=https-redirect@file"
     depends_on:
       - parse-server-api
-      - traefik
-  traefik:
-    image: traefik:v2.9
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-    ports:
-      - "80:80"
-      - "8080:8080"
-      - "443:443"
-    volumes:
-      - "./letsencrypt:/letsencrypt"
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-    restart: unless-stopped
-volumes:
-  parse-server-postgres:
+
+networks:
+  proxy:
+    external: true
+
+  
 
